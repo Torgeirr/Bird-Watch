@@ -48,7 +48,7 @@ public class BirdManager : MonoBehaviour
         return selectedDespawner;
     }
 
-    public Transform GetRandomAvailableLanding(TreeLanding tree)
+    public Transform GetRandomAvailableLanding(TreeLanding tree) // Makes sure the tree is not taken
     {
         List<Transform> availableLandings = new List<Transform>();
         if (!tree.landingTaken) availableLandings.Add(tree.landing.transform);
