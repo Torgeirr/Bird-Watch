@@ -50,7 +50,22 @@ public class RMBInstruction : MonoBehaviour
 
     private IEnumerator CycleRMBAlpha()
     {
-        Color fullAlpha = RMBImg.color; // The RMB's color with full alpha
+        // Split the whole alpha cycle in half, since there's just two things to alternate
+        float halfTheCycle = cycleTime / 2f;
+
+        // While the player hasn't clicked RMB for the first time yet
+        while (!alreadyClicked)
+        {
+            // Fade in
+            yield return StartCoroutine(FadeAlpha(0f, 1f, halfTheCycle));
+            // Fade out
+            yield return StartCoroutine(FadeAlpha(1f, 0f, halfTheCycle));
+        }
+
+        // Cleanup when alreadyClicked is true
+        RunCleanup();
+
+        /*Color fullAlpha = RMBImg.color; // The RMB's color with full alpha
         float halfCycle = cycleTime / 2f; // Half the total cycle time, i.e. One fade-in/fade-out 
         while (true)
         {
@@ -92,22 +107,42 @@ public class RMBInstruction : MonoBehaviour
                 }
 
             }
-        }
+        }*/
     }
+
+    private IEnumerator FadeAlpha(float from, float to, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            //Determine what the alpha is based on where the cycle is between beginning and end
+            float alpha = Mathf.Lerp(from, to, elapsed / duration);
+            SetAlpha(alpha);
+            yield return null;
+        }
+
+        SetAlpha(to); // Ensure exact end value
+    }
+
     private void SetAlpha(float alpha)
     {
         Color currentColor = RMBImg.color;
-        currentColor.a = alpha; // Modify only the alpha value
-        RMBImg.color = currentColor; // Apply the updated color
+        currentColor.a = alpha; // Specify that the alpha value should be modified, only
+        RMBImg.color = currentColor; // Apply the updated alpha
     }
+
 
     private void RunCleanup()
     {
+        // The proper way to stop a Coroutine with "while" logic, since it is now an instance
         if (faderCoroutine != null)
         {
             StopCoroutine(faderCoroutine);
         }
 
+        // Make sure all parts of the RMB Instructions are "off"
         Instructions.SetActive(false);
         MouseBlank.SetActive(false);
         RMB.SetActive(false);
