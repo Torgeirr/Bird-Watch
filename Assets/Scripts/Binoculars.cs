@@ -2,41 +2,47 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Linq;
+using UnityEditor.UI;
+using UnityEngine.UIElements;
 
 public class Binoculars : MonoBehaviour
 {
     public Camera mainCamera, BinocularCamera;
     public float zoomDistance = 10f;
     public float restingDistance = 50f;
-    public float zoomedFOV = 5f;
+    public float zoomedFOV = 15f;
     public float normalFOV = 60f;
     public float binoMoveSpeed = 5f, zoomSpeed = 3f;
+    public float[] ZoomLevels = { 8f, 15f, 22.5f }; //FOV values to serve as scrollable zoom levels
+    public int curZoom = 1; // Default to middle zoom level
+    public GameObject[] ZoomMarkers = new GameObject[3];
+    public int curMarkerSetting = 0;
+    public GameObject curMarkerPOS;
+    public GameObject zoomMarker, MarkerPOS1, MarkerPOS2, MarkerPOS3, markerFrom, markerTo;
 
     public GameObject BinocularDisplay, BinosUpPOS, BinosDownPOS;
     private Coroutine infoBoxCoroutine, ScannedIndicator;
 
-    public float detectionRange = 50f; //Range of raycast
+    public float detectionRange = 50f; //Range of bird scanner raycast
     public LayerMask birdLayer;
     public GameObject specimenInfoBox, speciesInfoBox, blurbInfoBox; // Bino UI panel that displays bird info
     public GameObject scannedIndicator; // Bino UI indicator that shows when bird scanned
     public GameObject RMBInstructions;
     public TMPro.TextMeshProUGUI birdStatText, birdSpeciesText, birdInfoText;
 
-    public bool isZoomed = false, isRMBClicked = false, newRMBClick = false, tester = false, firstClicked = false;
-    private Vector3 zoomTarget; // Spot the camera moves towards
-    private Vector3 restingPosition; // Camera's starting/returning position
+    public bool isZoomed = false, isRMBClicked = false, newRMBClick = false, tester = false, firstClicked = false, scrolled = false;
 
-    void Start()
+    private void Start()
     {
-        // Store the initial position of the camera
-        restingPosition = mainCamera.transform.position;
-        zoomTarget = mainCamera.transform.position + mainCamera.transform.forward * restingDistance;
+        curMarkerPOS = ZoomMarkers[0];
     }
-
     void FixedUpdate()
     {
         newRMBClick = false;
+        scrolled = false;
 
+        //If the player is clicking RMB while RMB isn't considered clicked
         if (!isRMBClicked && Input.GetMouseButton(1))
         {
             isRMBClicked = true;
@@ -50,6 +56,7 @@ public class Binoculars : MonoBehaviour
             }
             
         }
+        //If RMB is already considered clicked, but the player is not clicking it
         else if (isRMBClicked && !Input.GetMouseButton(1))
         {
             isRMBClicked = false;
@@ -79,14 +86,35 @@ public class Binoculars : MonoBehaviour
         // Left click to send raycast while zooming
         //mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, isZoomed ? zoomedFOV : normalFOV, Time.deltaTime * zoomSpeed);
         //Lerp between "Binos up" position and "Binos down" position, depending on if isZoomed  
-        BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, isZoomed ? zoomedFOV : normalFOV, Time.deltaTime + zoomSpeed);
+        
+        //Set the first part of the Lerp (from) to the current marker position
+        markerFrom = curMarkerPOS;
+        if (isZoomed) 
+        {
+            if(Input.mouseScrollDelta.y < 0) // If scrolled up
+            {
+                SetZoom(1);
+            }
+            else if (Input.mouseScrollDelta.y > 0) // If scrolled down
+            {
+                SetZoom(-1);
+            }
+        }
+        markerTo.transform.position = curMarkerPOS.transform.position;
+
+        float newFOV = isZoomed ? ZoomLevels[curZoom] : normalFOV;
+        BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, newFOV, Time.deltaTime * zoomSpeed);
         BinocularDisplay.transform.position = Vector3.Lerp(BinocularDisplay.transform.position, isZoomed ? BinosUpPOS.transform.position : BinosDownPOS.transform.position, Time.deltaTime * binoMoveSpeed);
+        zoomMarker.transform.position = Vector3.Lerp(markerFrom.transform.position, markerTo.transform.position, Time.deltaTime * zoomSpeed);
+        /*
+        BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, isZoomed ? zoomedFOV : normalFOV, Time.deltaTime + zoomSpeed);
+        */
 
         if (Input.GetMouseButtonDown(0))
-            {
-                Ray ray = new(BinocularCamera.transform.position, BinocularCamera.transform.forward);
-                Debug.Log("Drawing Ray");
-                Debug.DrawRay(BinocularCamera.transform.position, BinocularCamera.transform.forward, Color.green);
+        {
+          Ray ray = new(BinocularCamera.transform.position, BinocularCamera.transform.forward);
+          Debug.Log("Drawing Ray");
+          Debug.DrawRay(BinocularCamera.transform.position, BinocularCamera.transform.forward, Color.green);
                 // If raycast hits something in the "Bird" Layer
                 if (Physics.Raycast(ray, out RaycastHit hit, detectionRange, birdLayer))
                 {
@@ -101,25 +129,42 @@ public class Binoculars : MonoBehaviour
                     {
                         Debug.Log("Bird = null");
                     }
-                if (!speciesInfoBox.activeSelf)
-                {
-                    StartInfoBoxCoroutine();
+                    if (!speciesInfoBox.activeSelf)
+                    {
+                        StartInfoBoxCoroutine();
+                    }
+                    else if (speciesInfoBox.activeSelf)
+                    {
+                        RestartInfoBoxCoroutine();
+                    }
+                    if (!scannedIndicator.activeSelf)
+                    {
+                        StartScannedIndicator();
+                    }
+                    else if (scannedIndicator.activeSelf)
+                    {
+                        RestartScannedIndicator();
+                    }
                 }
-                else if (speciesInfoBox.activeSelf)
-                {
-                    RestartInfoBoxCoroutine();
-                }
-                if (!scannedIndicator.activeSelf)
-                {
-                    StartScannedIndicator();
-                }
-                else if (scannedIndicator.activeSelf)
-                {
-                    RestartScannedIndicator();
-                }
-            }
-            }
+         }
+
+        
     }
+
+    public void SetZoom(int scrollDirection)
+    {
+        
+        curZoom = Mathf.Clamp(curZoom + scrollDirection, 0, ZoomLevels.Length - 1);
+        BinocularCamera.fieldOfView = ZoomLevels[curZoom];
+        curMarkerSetting = Mathf.Clamp(curMarkerSetting + scrollDirection, 0, ZoomMarkers.Length - 1);
+        Debug.Log($"Zoom set to {ZoomLevels[curZoom]}");
+    }
+
+    public void SetZoomMarker()
+    {
+        //if(curZoom == ZoomLevels[0]) 
+    }
+       
 
     private void StartInfoBoxCoroutine()
     {
@@ -201,7 +246,7 @@ public class Binoculars : MonoBehaviour
 
         birdInfoText.text = bird.info;
 
-        /*//Display Info Box
+        /*// Display Info Box
         specimenInfoBox.SetActive(true);
         speciesInfoBox.SetActive(true);
         blurbInfoBox.SetActive(true);*/
