@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.XR.CoreUtils;
-using UnityEditor.Profiling.Memory.Experimental;
+//using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.UI;
 
