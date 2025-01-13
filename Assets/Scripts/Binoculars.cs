@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Linq;
-using UnityEditor.UI;
+
 using UnityEngine.UIElements;
 
 public class Binoculars : MonoBehaviour
@@ -28,6 +28,7 @@ public class Binoculars : MonoBehaviour
     public LayerMask birdLayer;
     public GameObject specimenInfoBox, speciesInfoBox, blurbInfoBox; // Bino UI panel that displays bird info
     public GameObject scannedIndicator; // Bino UI indicator that shows when bird scanned
+    public GameObject Logbook; // Logbook gameobject reference
     public GameObject RMBInstructions;
     public TMPro.TextMeshProUGUI birdStatText, birdSpeciesText, birdInfoText;
 
@@ -137,6 +138,7 @@ public class Binoculars : MonoBehaviour
                         {
                             Debug.Log("Scanned a bird");
                             ShowBirdInfo(bird);
+                            LogBirdInfo(bird);
                         }
                         else
                         {
@@ -265,5 +267,10 @@ public class Binoculars : MonoBehaviour
         specimenInfoBox.SetActive(true);
         speciesInfoBox.SetActive(true);
         blurbInfoBox.SetActive(true);*/
+    }
+    void LogBirdInfo(BirdInfo bird)
+    {
+        // Add a log entry to the logbook script with the bird's BirdInfo
+        Logbook.GetComponent<Logbook>().AddBirdEntry(bird);
     }
 }
