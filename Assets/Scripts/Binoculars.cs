@@ -123,7 +123,7 @@ public class Binoculars : MonoBehaviour
         // Update the transform of the binocular object itself so it stays where it should be (whether player is using it or has it down)
         BinocularDisplay.transform.position = Vector3.Lerp(BinocularDisplay.transform.position, isZoomed ? BinosUpPOS.transform.position : BinosDownPOS.transform.position, Time.deltaTime * binoMoveSpeed);
         
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
           Ray ray = new(BinocularCamera.transform.position, BinocularCamera.transform.forward);
           Debug.Log("Drawing Ray");

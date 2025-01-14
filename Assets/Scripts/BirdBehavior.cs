@@ -130,118 +130,6 @@ public class BirdBehavior : MonoBehaviour
         selectedTree.CheckTreeFull();
     }
 
-    /*public void PickTree()
-    {
-        //Randomly select which tree to pick
-        float pick = Random.Range(0, 4);
-        if(pick < 1)
-        {
-            
-            selectedTree = tree;
-            if (selectedTree.GetComponent<TreeLanding>().treeFull)
-            {
-                PickTree();
-                return;
-            }
-            
-        }
-        else if(pick >= 1 && pick < 2)
-        {
-            selectedTree = tree1;
-            if (selectedTree.GetComponent<TreeLanding>().treeFull)
-            {
-                PickTree();
-                return;
-            }
-        }
-        else if (pick >= 2 && pick < 3)
-        {
-            selectedTree = tree2;
-            if (selectedTree.GetComponent<TreeLanding>().treeFull)
-            {
-                PickTree();
-                return;
-            }
-        }
-        else if (pick >= 3)
-        {
-            selectedTree = tree3;
-            if (selectedTree.GetComponent<TreeLanding>().treeFull)
-            {
-                PickTree();
-                return;
-            }
-        }
-
-        //Assigns the landings to the tree's landing spots in TreeLanding.cs
-        AssignLandings();
-
-        
-    }*/
-
-    /*public bool PickLanding()
-    {
-        //Randomly select what landing to pick
-        float pickLanding = Random.Range(0, 4);
-        if (pickLanding < 1)
-        {
-            if (!selectedTree.GetComponent<TreeLanding>().landingTaken)
-            {
-                selectedLanding = landing;
-                selectedTree.GetComponent<TreeLanding>().landingTaken = true;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-            
-        }
-        else if (pickLanding >= 1 && pickLanding < 2)
-        {
-            if (!selectedTree.GetComponent<TreeLanding>().landing1Taken)
-            {
-                selectedLanding = landing1;
-                selectedTree.GetComponent<TreeLanding>().landing1Taken = true;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (pickLanding >= 2 && pickLanding < 3)
-        {
-            if (!selectedTree.GetComponent<TreeLanding>().landing2Taken)
-            {
-                selectedLanding = landing2;
-                selectedTree.GetComponent<TreeLanding>().landing2Taken = true;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else if (pickLanding >= 3)
-        {
-            if (!selectedTree.GetComponent<TreeLanding>().landing2Taken)
-            {
-                selectedLanding = landing2;
-                selectedTree.GetComponent<TreeLanding>().landing2Taken = true;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
-    }*/
-
     public void FacePlayer()
     {
         if (playerCamera != null && birdRenderer != null)
@@ -258,11 +146,11 @@ public class BirdBehavior : MonoBehaviour
             // Flip based on direction relative to player
             if (movementDirection.x > 0)
             {
-                birdRenderer.transform.localScale = new Vector3(0.5889f, 0.5889f, 0.5889f); // Facing right
+                birdRenderer.transform.localScale = new Vector3(0.105f, 0.105f, 0.105f); // Facing right
             }
             else if (movementDirection.x < 0)
             {
-                birdRenderer.transform.localScale = new Vector3(-0.5889f, 0.5889f, 0.5889f); // Facing left
+                birdRenderer.transform.localScale = new Vector3(-0.105f, 0.105f, 0.105f); // Facing left
             }
 
             lastPosition = transform.position;
