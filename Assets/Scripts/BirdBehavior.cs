@@ -20,6 +20,7 @@ public class BirdBehavior : MonoBehaviour
     public Transform spawnPoint;
     public bool doneSitting = false;
     private BirdManager manager;
+    public BirdInfo birdInfo;
     private Transform playerCamera;
     public Renderer birdRenderer;
     private Vector3 lastPosition;
@@ -28,6 +29,7 @@ public class BirdBehavior : MonoBehaviour
     void Start()
     {
         manager = FindObjectOfType<BirdManager>();
+        birdInfo = gameObject.GetComponent<BirdInfo>();
         playerCamera = Camera.main.transform;
         if(manager == null)
         {
@@ -140,14 +142,32 @@ public class BirdBehavior : MonoBehaviour
             // Compare current position to last to determine which direction to face
             Vector3 movementDirection = transform.position - lastPosition;
 
-            // Flip based on direction relative to player
-            if (movementDirection.x > 0)
+            //Scale the bird's img so it faces the direction it's moving or last moved
+            //Also sets scale of bird bc each bird's img size is diff
+            if(birdInfo.curSpecies == BirdInfo.SpeciesList.hSparrow)
             {
-                birdRenderer.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f); // Facing right
+                // Flip based on direction relative to player
+                if (movementDirection.x > 0)
+                {
+                    birdRenderer.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f); // Facing right
+                }
+                else if (movementDirection.x < 0)
+                {
+                    birdRenderer.transform.localScale = new Vector3(-0.15f, 0.15f, 0.15f); // Facing left
+                }
             }
-            else if (movementDirection.x < 0)
+            else if (birdInfo.curSpecies == BirdInfo.SpeciesList.cardinal)
             {
-                birdRenderer.transform.localScale = new Vector3(-0.15f, 0.15f, 0.15f); // Facing left
+                // Flip based on direction relative to player
+                // Note: Both m/f Cardinal img face left instead of right (like the m/f HSparrow imgs0.174683), so its direction is opposite of the House Sparrow's
+                if (movementDirection.x > 0)
+                {
+                    birdRenderer.transform.localScale = new Vector3(-0.174683f, 0.174683f, 0.174683f); // Facing right
+                }
+                else if (movementDirection.x < 0)
+                {
+                    birdRenderer.transform.localScale = new Vector3(0.174683f, 0.174683f, 0.174683f); // Facing left
+                }
             }
 
             lastPosition = transform.position;

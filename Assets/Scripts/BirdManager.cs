@@ -6,7 +6,7 @@ using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 public class BirdManager : MonoBehaviour
 {
     public static BirdManager Instance { get; private set; } //Make singleton so only one BirdManager exists
-    public GameObject bird;
+    public GameObject bird, HSparrow, Cardinal;
     public List<TreeLanding> trees = new List<TreeLanding>();
     public List<Despawner> despawners = new List<Despawner>();
     public List<Spawner> spawners = new List<Spawner>();
@@ -37,8 +37,60 @@ public class BirdManager : MonoBehaviour
     {
         if(GetRandomAvailableTree() != null)
         {
-            Instantiate(bird, GetRandomSpawner().transform.position, Quaternion.identity);
+            int selection = BirdSelector(Mathf.RoundToInt(Random.Range(1f, 4f)));
+
+            if (selection == 1)
+            {
+                Debug.Log("BirdSelector() returned 1");
+                Instantiate(HSparrow, GetRandomSpawner().transform.position, Quaternion.identity);
+            }
+            else if(selection == 2)
+            {
+                Debug.Log("BirdSelector() returned 1");
+                Instantiate(Cardinal, GetRandomSpawner().transform.position, Quaternion.identity);
+            }
+            else if (selection == 3)
+            {
+                Debug.Log("BirdSelector() returned 1");
+                Instantiate(HSparrow, GetRandomSpawner().transform.position, Quaternion.identity);
+            }
+            else if (selection == 4)
+            {
+                Debug.Log("BirdSelector() returned 1");
+                Instantiate(Cardinal, GetRandomSpawner().transform.position, Quaternion.identity);
+            }
+            else if (selection < 1 || selection > 4)
+            {
+                Instantiate(HSparrow, GetRandomSpawner().transform.position, Quaternion.identity);
+                Debug.Log("Well this wasn't supposed to happen. BirdSelector() returned outside of its parameter range! Spawning House Sparrow just to be safe.");
+            }
         }
+    }
+
+    public int BirdSelector(float rando)
+    {
+        if((rando >= 1) && (rando < 2))
+        {
+            return 1;
+        }
+        else if((rando >= 2) && (rando < 3))
+        {
+            return 2;
+        }
+        else if ((rando >= 3) && (rando < 4))
+        {
+            return 3;
+        }
+        else if ((rando >= 4))
+        {
+            return 4;
+        }
+        else
+        {
+            return 0;
+        }
+        
+
     }
 
     public TreeLanding GetRandomAvailableTree()

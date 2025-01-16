@@ -83,6 +83,33 @@ public class Logbook : MonoBehaviour
                 }
             }
         }
+        else if (birdInfo.curSpecies == BirdInfo.SpeciesList.cardinal)
+        {
+            // Check bird gender, assign the appropriate reference image
+            if (birdInfo.curSex == BirdInfo.SexCategory.male)
+            {
+                refImage = entryImgBox.transform.Find("Cardinal Image Male").gameObject;
+            }
+            else if (birdInfo.curSex == BirdInfo.SexCategory.female)
+            {
+                refImage = entryImgBox.transform.Find("Cardinal Image Female").gameObject;
+            }
+
+            //Turn the referenced image's gameobject on
+            if (refImage != null)
+            {
+                refImage.SetActive(true);
+            }
+
+            //Turn off all reference images that aren't the appropriate one
+            foreach (Transform child in entryImgBox.transform)
+            {
+                if (child.gameObject != refImage)
+                {
+                    child.gameObject.SetActive(false);
+                }
+            }
+        }
 
         // Assign the bird's ID to local holding variable and add it to birdIDs List
         thisID = birdInfo.ID;

@@ -58,6 +58,37 @@ public class BirdInfo : MonoBehaviour
                     birdRenderer.material = maleMaterial;
                 }
             }
+            else if (curSpecies == SpeciesList.cardinal)
+            {
+                //If the bird is a cardinal, give it cardinal stats and info
+                species = "Northern Cardinal";
+                latin = "Cardinalis cardinalis";
+                info = "Makes its nests in shrubs and spends its time foraging on the ground and singing in the trees.";
+                lengthMin = 8.3f;
+                lengthMax = 9.3f;
+                weightMin = 1.19f;
+                weightMax = 2.29f;
+
+                // Assign randomized length for bird within its range
+                length = Random.Range(lengthMin, lengthMax);
+                // Assign the ration of the actual length and the max length
+                float ratio = length / lengthMax;
+                // Determine the weight by the same ratio
+                weight = (weightMin + ratio);
+
+                //Randomly select sex
+                int rando = Random.Range(0, 100);
+                if (rando <= 50f)
+                {
+                    curSex = SexCategory.female;
+                    birdRenderer.material = femaleMaterial;
+                }
+                else
+                {
+                    curSex = SexCategory.male;
+                    birdRenderer.material = maleMaterial;
+                }
+            }
         }
     }
 

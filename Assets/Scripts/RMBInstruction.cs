@@ -28,19 +28,14 @@ public class RMBInstruction : MonoBehaviour
 
     private IEnumerator Delay()
     {
-        Debug.Log("Delay Started");
         yield return new WaitForSeconds(3.0f);
-        Debug.Log("Delay over");
 
         if (!alreadyClicked) // If Player has not right-clicked yet, turn on RMB instructions
         {
-            Debug.Log("Not already clicked");
             Instructions.SetActive(true);
             MouseBlank.SetActive(true);
             RMB.SetActive(true);
-            Debug.Log("All true");
             faderCoroutine = StartCoroutine("CycleRMBAlpha"); // Cycle RMB alpha to indicate it to Player
-            Debug.Log("Second CRT ran");
         }
         else // If Player has right-clicked, turn off coroutine and UI objects
         {
