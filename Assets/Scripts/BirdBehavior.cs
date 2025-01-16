@@ -143,11 +143,11 @@ public class BirdBehavior : MonoBehaviour
             // Flip based on direction relative to player
             if (movementDirection.x > 0)
             {
-                birdRenderer.transform.localScale = new Vector3(0.105f, 0.105f, 0.105f); // Facing right
+                birdRenderer.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f); // Facing right
             }
             else if (movementDirection.x < 0)
             {
-                birdRenderer.transform.localScale = new Vector3(-0.105f, 0.105f, 0.105f); // Facing left
+                birdRenderer.transform.localScale = new Vector3(-0.15f, 0.15f, 0.15f); // Facing left
             }
 
             lastPosition = transform.position;
