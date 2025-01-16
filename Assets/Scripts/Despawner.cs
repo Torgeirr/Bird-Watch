@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Despawner : MonoBehaviour
 {
-//I am just a placeholder >:]
+// I am but a humble reference script :^]
 }

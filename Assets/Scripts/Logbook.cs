@@ -12,31 +12,40 @@ public class Logbook : MonoBehaviour
     [SerializeField] private Transform LogbookParent; // Parent object where entries will be housed
     [SerializeField] private List<Transform> entryPositions; // List of positions for entries (max 4)
     [SerializeField] private List<GameObject> activeEntries = new List<GameObject>(); // Active log entries
+    public List<int> birdIDs = new List<int>();
+    private int thisID;
 
     private const int maxVisibleEntries = 4;
+    private const int maxBirdIDs = 4;
 
     // Method to add a new bird entry to the logbook
     public void AddBirdEntry(BirdInfo birdInfo)
     {
-        // Create a new log entry based on the template
-        GameObject newEntry = Instantiate(entryTemplate, LogbookParent);
-        newEntry.SetActive(true);
-
-        // Populate the log entry with bird data
-        PopulateEntry(newEntry, birdInfo);
-
-        // Insert the new entry at the top of the list
-        activeEntries.Insert(0, newEntry);
-
-        // Update entry positions
-        UpdateEntryPositions();
-
-        // Remove the oldest entry if the list exceeds the visible limit
-        if (activeEntries.Count > maxVisibleEntries)
+        //Only add entry if scanned bird's ID is not already in the Logbook's list of IDs
+        if (!BirdManager.Instance.birdIDs.Contains(thisID))
         {
-            GameObject removedEntry = activeEntries[activeEntries.Count - 1];
-            activeEntries.RemoveAt(activeEntries.Count - 1);
-            Destroy(removedEntry);
+            // Create a new log entry based on the template
+            GameObject newEntry = Instantiate(entryTemplate, LogbookParent);
+            newEntry.SetActive(true);
+
+            // Populate the log entry with the bird's data
+            PopulateEntry(newEntry, birdInfo);
+
+            // Add the new entry at the top of the list
+            activeEntries.Insert(0, newEntry);
+
+            // Update entry positions
+            UpdateEntryPositions();
+
+            // Remove the oldest entry and ID if the list exceeds max limit (4 entries)
+            if (activeEntries.Count > maxVisibleEntries)
+            {
+                RemoveEntryAndID();
+            }
+        }
+        else
+        {
+            Debug.Log("Current bird is already logged in Logbook");
         }
     }
 
@@ -49,7 +58,7 @@ public class Logbook : MonoBehaviour
         // Check bird species
         if(birdInfo.curSpecies == BirdInfo.SpeciesList.hSparrow)
         {
-            // Check bird gender
+            // Check bird gender, assign the appropriate reference image
             if (birdInfo.curSex == BirdInfo.SexCategory.male)
             {
                 refImage = entryImgBox.transform.Find("House Sparrow Image Male").gameObject;
@@ -59,11 +68,13 @@ public class Logbook : MonoBehaviour
                 refImage = entryImgBox.transform.Find("House Sparrow Image Female").gameObject;
             }
 
+            //Turn the referenced image's gameobject on
             if (refImage != null)
             {
                 refImage.SetActive(true);
             }
 
+            //Turn off all reference images that aren't the appropriate one
             foreach (Transform child in entryImgBox.transform)
             {
                 if(child.gameObject != refImage)
@@ -72,34 +83,49 @@ public class Logbook : MonoBehaviour
                 }
             }
         }
-        
 
-        // Assign species name
+        // Assign the bird's ID to local holding variable and add it to birdIDs List
+        thisID = birdInfo.ID;
+        birdIDs.Add(thisID);
+
+        // Find the species TMP and update with the bird's species info
         TMP_Text speciesText = entry.transform.Find("Species Text").GetComponent<TMP_Text>();
         speciesText.text = birdInfo.species;
 
-        // Assign gender
+        // Find the gender TMP and update with the bird's gender info
         TMP_Text genderText = entry.transform.Find("Gender Text").GetComponent<TMP_Text>();
         genderText.text = birdInfo.curSex.ToString();
 
-        // Assign length and weight
+        // Find the length and weight TMPs and update with the bird's length and weight info
         TMP_Text lengthText = entry.transform.Find("Length Text").GetComponent<TMP_Text>();
         lengthText.text = $"Length: {birdInfo.length:F1} in";
 
         TMP_Text weightText = entry.transform.Find("Weight Text").GetComponent<TMP_Text>();
         weightText.text = $"Weight: {birdInfo.weight:F1} oz";
 
-        // Assign additional info
+        // Find the info blurb TMP and update with the bird's blurb info
         TMP_Text infoText = entry.transform.Find("Info Text").GetComponent<TMP_Text>();
         infoText.text = birdInfo.info;
+
     }
 
-    // Update the positions of all active entries
     private void UpdateEntryPositions()
     {
+        // Update position of each active entry
         for (int i = 0; i < activeEntries.Count && i < entryPositions.Count; i++)
         {
             activeEntries[i].transform.localPosition = entryPositions[i].localPosition;
         }
+    }
+
+    public void RemoveEntryAndID()
+    {
+        //Remove the appropriate bird ID from birdIDs List
+        birdIDs.RemoveAt(birdIDs.Count - 1);
+
+        //Assign the last entry in activeEntries and remove it, then destroy the gameobject
+        GameObject removedEntry = activeEntries[activeEntries.Count - 1];
+        activeEntries.RemoveAt(activeEntries.Count - 1);
+        Destroy(removedEntry);
     }
 }
