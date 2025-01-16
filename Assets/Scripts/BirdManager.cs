@@ -5,18 +5,32 @@ using UnityEngine.XR.Interaction.Toolkit.Samples.StarterAssets;
 
 public class BirdManager : MonoBehaviour
 {
+    public static BirdManager Instance { get; private set; } //Make singleton so only one BirdManager exists
     public GameObject bird;
     public List<TreeLanding> trees = new List<TreeLanding>();
     public List<Despawner> despawners = new List<Despawner>();
     public List<Spawner> spawners = new List<Spawner>();
+    public List<int> birdIDs = new List<int>();
 
     public void Awake()
     {
+        //Singleton setup
+        if(Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+
         trees.AddRange(FindObjectsOfType<TreeLanding>());
         despawners.AddRange(FindObjectsOfType<Despawner>());
         spawners.AddRange(FindObjectsOfType<Spawner>());
 
-        InvokeRepeating("SpawnBird", 1f, 3f);
+        InvokeRepeating("SpawnBird", 1f, 1.5f);
     }
 
     public void SpawnBird()

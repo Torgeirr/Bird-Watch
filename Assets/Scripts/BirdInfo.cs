@@ -5,8 +5,10 @@ using UnityEngine;
 public class BirdInfo : MonoBehaviour
 {
     public string species, latin, info;
+    public int ID;
     public float length, weight, lengthMin, lengthMax, weightMin, weightMax, wingMin;
     public GameObject mockSprite;
+    //public BirdManager manager;
     public enum SpeciesList { none, hSparrow, cardinal, chickadee, baldEagle };
     public SpeciesList curSpecies = SpeciesList.none;
     public enum SexCategory { none, male, female };
@@ -17,12 +19,12 @@ public class BirdInfo : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //birdRenderer = GetComponentInChildren<Renderer>();
-        SetStats();
+        SetStats(); //Set bird stats
     }
 
     private void SetStats()
     {
+        SetID(); // Give this bird a unique ID
         if(curSpecies != SpeciesList.none)
         {
             if(curSpecies == SpeciesList.hSparrow)
@@ -57,5 +59,21 @@ public class BirdInfo : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void SetID()
+    {
+        int tryID; // Ref to the ID number to try assigning
+
+        // do/while loop will rerun the RNG whenever tryID's value is already in the birdIDs List
+        do
+        {
+            tryID = Mathf.FloorToInt(Random.Range(100000, 999999));
+        }
+        while (BirdManager.Instance.birdIDs.Contains(tryID));
+
+        //If not already in birdIDs List, add the new ID to the List and assign the global ID variable the value
+        BirdManager.Instance.birdIDs.Add(tryID);
+        this.ID = tryID;
     }
 }

@@ -84,6 +84,7 @@ public class BirdBehavior : MonoBehaviour
                 transform.position = Vector3.Slerp(transform.position, selectedExit.transform.position, flightProgress);
                 if (flightProgress >= 1f)
                 {
+                    Despawn();
                     gameObject.SetActive(false);
                 }
             }
@@ -120,10 +121,6 @@ public class BirdBehavior : MonoBehaviour
         else if (landingSpot.name == selectedTree.landing1.name) selectedTree.landing1Taken = true;
         else if (landingSpot.name == selectedTree.landing2.name) selectedTree.landing2Taken = true;
         else if (landingSpot.name == selectedTree.landing3.name) selectedTree.landing3Taken = true;
-        /*if (landingSpot == selectedTree.landing) selectedTree.landingTaken = true;
-        else if (landingSpot == selectedTree.landing1) selectedTree.landing1Taken = true;
-        else if (landingSpot == selectedTree.landing2) selectedTree.landing2Taken = true;
-        else if (landingSpot == selectedTree.landing3) selectedTree.landing3Taken = true;*/
 
         Debug.Log("Selected Landing: " + selectedLanding.name);
         // Update the tree's full status
@@ -182,52 +179,6 @@ public class BirdBehavior : MonoBehaviour
     {
         selectedExit = manager.GetRandomDespawner();
         return selectedExit;
-        
-        /*if(manager.GetRandomDespawner() != null)
-        {
-            if (manager.GetRandomDespawner() == manager.despawners[0])
-            {
-                selectedExit = exit.transform;
-            }
-            else if (manager.GetRandomDespawner() == manager.despawners[1])
-            {
-                selectedExit = exit1.transform;
-            }
-            else if (manager.GetRandomDespawner() == manager.despawners[2])
-            {
-                selectedExit = exit2.transform;
-            }
-            else if (manager.GetRandomDespawner() == manager.despawners[3])
-            {
-                selectedExit = exit3.transform;
-            }
-            else
-            {
-                Debug.Log(manager.GetRandomDespawner());
-            }
-        }
-        else
-        {
-            Debug.LogError("manager.GetRandomDespawner() is null");
-        }*/
-        /*//Randomly select which tree to pick
-        float pick = Random.Range(0, 4);
-        if (pick < 1)
-        {
-            selectedExit = exit.transform;
-        }
-        else if (pick >= 1 && pick < 2)
-        {
-            selectedExit = exit1.transform;
-        }
-        else if (pick >= 2 && pick < 3)
-        {
-            selectedExit = exit2.transform;
-        }
-        else if (pick >= 3)
-        {
-            selectedExit = exit3.transform;
-        }*/
     }
 
     private IEnumerator SitOnBranch()
@@ -238,4 +189,20 @@ public class BirdBehavior : MonoBehaviour
 
         doneSitting = true;
     }
+    public void Despawn()
+    {
+       
+        BirdInfo birdInfo = gameObject.GetComponent<BirdInfo>();
+        if (birdInfo != null)
+        {
+            int thisID = birdInfo.ID;
+
+            // Remove this bird's ID from the birdIDs List in BirdManager
+            BirdManager.Instance.birdIDs.Remove(thisID);
+        }
+
+        // Set the bird inactive
+        gameObject.SetActive(false);
+    }
+    
 }
