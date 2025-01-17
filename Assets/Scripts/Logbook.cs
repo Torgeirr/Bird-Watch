@@ -4,6 +4,7 @@ using TMPro;
 using Unity.XR.CoreUtils;
 //using UnityEditor.Profiling.Memory.Experimental;
 using UnityEngine;
+using UnityEngine.Timeline;
 using UnityEngine.UI;
 
 public class Logbook : MonoBehaviour
@@ -12,12 +13,34 @@ public class Logbook : MonoBehaviour
     [SerializeField] private Transform LogbookParent; // Parent object where entries will be housed
     [SerializeField] private List<Transform> entryPositions; // List of positions for entries (max 4)
     [SerializeField] private List<GameObject> activeEntries = new List<GameObject>(); // Active log entries
+    public List<GameObject> Encyclobirdia = new List<GameObject>();
+    public GameObject curEncyclobirdiaEntry, binoculars;
+    public Binoculars binoScript;
+    public GameObject LogbookUpPOS, LogbookDownPOS;
+    private float moveSpeed = 5f;
     public List<int> birdIDs = new List<int>();
     private int thisID;
+    public GameObject LMBInstructions;
+    public bool isLMBClicked = false, newLMBClick = false, firstClicked = false, isRaised = false;
 
     private const int maxVisibleEntries = 4;
     private const int maxBirdIDs = 4;
 
+    public void Start()
+    {
+        binoScript = binoculars.GetComponent<Binoculars>();
+    }
+    public void FixedUpdate()
+    {
+        // Only let player operate Logbook if Binoculars are not being used
+        if (!binoScript.isZoomed)
+        {
+            // Operates both Logbook raise/lower action and the Logbook UI instructions
+            // Uses same general logic as FixedUpdate() of Binoculars.cs, just in a function 
+            LMBInstruction();
+        }
+        
+    }
     // Method to add a new bird entry to the logbook
     public void AddBirdEntry(BirdInfo birdInfo)
     {
@@ -155,4 +178,78 @@ public class Logbook : MonoBehaviour
         activeEntries.RemoveAt(activeEntries.Count - 1);
         Destroy(removedEntry);
     }
+
+    public void LMBInstruction()
+    {
+        newLMBClick = false;
+        //If the player is clicking LMB while LMB isn't considered clicked
+        if (!isLMBClicked && Input.GetMouseButton(0))
+        {
+            isLMBClicked = true;
+            newLMBClick = true;
+            //Debug.Log("newLMBClick turned to true");
+
+            // If this is the first left-click, tell LMBInstruction to turn off and not instruct the player
+            if (!firstClicked)
+            {
+                LMBInstructions.GetComponent<LMBInstruction>().alreadyClicked = true;
+            }
+
+        }
+        //If LMB is already considered clicked, but the player is not clicking it
+        else if (isLMBClicked && !Input.GetMouseButton(0))
+        {
+            isLMBClicked = false;
+        }
+
+        if (newLMBClick)
+        {
+            isRaised = !isRaised;
+        }
+
+        if (isRaised)
+        {
+            if (Input.mouseScrollDelta.y < 0) // If scrolled up
+            {
+                Debug.Log("Page scrolled UP");
+                //SetPage(1);
+            }
+            else if (Input.mouseScrollDelta.y > 0) // If scrolled down
+            {
+                Debug.Log("Page scrolled UP");
+                //SetPage(-1);
+            }
+        }
+
+        //Replace with page scrolling logic
+        //markerFrom = curMarkerPOS;
+       // curMarkerPOS = ZoomMarkers[curZoom];
+       // markerTo = curMarkerPOS;
+
+        //float newFOV = isZoomed ? ZoomLevels[curZoom] : normalFOV;
+        //BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, newFOV, Time.deltaTime * zoomSpeed);
+
+       // if (markerFrom != null && markerTo != null)
+       // {
+       //     zoomMarker.transform.position = Vector3.Lerp(markerFrom.transform.position, markerTo.transform.position, Time.deltaTime * zoomSpeed);
+       // }
+       // else
+       // {
+       //     Debug.LogWarning("MarkerFrom or MarkerTo not assigned");
+       // }
+
+        // Update the transform of the Logbook object itself so it stays where it should be (whether player is using it or has it down)
+        transform.position = Vector3.Lerp(transform.position, isRaised ? LogbookUpPOS.transform.position : LogbookDownPOS.transform.position, Time.deltaTime * moveSpeed);
+        transform.rotation = Quaternion.Lerp(transform.rotation, isRaised ? LogbookUpPOS.transform.rotation : LogbookDownPOS.transform.rotation, Time.deltaTime * moveSpeed);
+    }
+
+    //Sets the Logbook Encyclopedia page as the player scrolls (when book is raised)
+    //public void SetPage(int scrollDirection)
+    //{
+
+    //    curPage = Mathf.Clamp(curPage + scrollDirection, 0, PageLevels.Length - 1);
+    //    BinocularCamera.fieldOfView = PageLevels[curPage];
+     //   curMarkerSetting = Mathf.Clamp(curMarkerSetting + scrollDirection, 0, PageLevels.Length - 1);
+    //    Debug.Log($"Zoom set to {PageLevels[curPage]}");
+   // }
 }

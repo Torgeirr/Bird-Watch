@@ -29,6 +29,7 @@ public class Binoculars : MonoBehaviour
     public GameObject specimenInfoBox, speciesInfoBox, blurbInfoBox; // Bino UI panel that displays bird info
     public GameObject scannedIndicator; // Bino UI indicator that shows when bird scanned
     public GameObject Logbook; // Logbook gameobject reference
+    public Logbook logbookScript;
     public GameObject RMBInstructions;
     public TMPro.TextMeshProUGUI birdStatText, birdSpeciesText, birdInfoText;
 
@@ -40,98 +41,82 @@ public class Binoculars : MonoBehaviour
         curMarkerPOS = ZoomMarkers[1];
         markerFrom = curMarkerPOS;
         markerTo = curMarkerPOS;
+
+        //Initialize referenced Logbook.cs script
+        logbookScript = Logbook.GetComponent<Logbook>();
     }
     void FixedUpdate()
     {
-        newRMBClick = false;
-        scrolled = false;
-
-        //If the player is clicking RMB while RMB isn't considered clicked
-        if (!isRMBClicked && Input.GetMouseButton(1))
+        // Only let player operate Binoculars if Logbook is not being used
+        if (!logbookScript.isRaised)
         {
-            isRMBClicked = true;
-            newRMBClick = true;
-            //Debug.Log("newRMBClick turned to true");
+            newRMBClick = false;
+            scrolled = false;
 
-            // If this is the first right-click, tell RMBInstruction to turn off and not instruct the player
-            if (!firstClicked)
+            //If the player is clicking RMB while RMB isn't considered clicked
+            if (!isRMBClicked && Input.GetMouseButton(1))
             {
-                RMBInstructions.GetComponent<RMBInstruction>().alreadyClicked = true;
+                isRMBClicked = true;
+                newRMBClick = true;
+                //Debug.Log("newRMBClick turned to true");
+
+                // If this is the first right-click, tell RMBInstruction to turn off and not instruct the player
+                if (!firstClicked)
+                {
+                    RMBInstructions.GetComponent<RMBInstruction>().alreadyClicked = true;
+                }
+
             }
-            
-        }
-        //If RMB is already considered clicked, but the player is not clicking it
-        else if (isRMBClicked && !Input.GetMouseButton(1))
-        {
-            isRMBClicked = false;
-        }
-
-        if (newRMBClick)
-        {
-            isZoomed = !isZoomed;
-        }
-
-        // If right-click is down, is zoomed
-        /*if (!isZoomed && Input.GetMouseButton(1))
-        {
-            isZoomed = true;
-        }
-        else if(isZoomed && !Input.GetMouseButton(1)) 
-        {
-            isZoomed = false;
-        }*/
-
-
-        // Move the camera toward the zoom target - Lerp makes it more immediate than Slerp
-        //mainCamera.transform.position = Vector3.Lerp(mainCamera.transform.position, zoomTarget, Time.deltaTime * zoomSpeed);
-        // Lerp between zoomed POV and non-zoomed POV depending on if isZoomed - Lerp makes it more immediate than Slerp
-        //mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, isZoomed ? zoomedFOV : normalFOV, Time.deltaTime * zoomSpeed);
-
-        // Left click to send raycast while zooming
-        //mainCamera.fieldOfView = Mathf.Lerp(mainCamera.fieldOfView, isZoomed ? zoomedFOV : normalFOV, Time.deltaTime * zoomSpeed);
-        //Lerp between "Binos up" position and "Binos down" position, depending on if isZoomed  
-        
-        //Set the first part of the Lerp (from) to the current marker position
-        
-        if (isZoomed) 
-        {
-            if(Input.mouseScrollDelta.y < 0) // If scrolled up
+            //If RMB is already considered clicked, but the player is not clicking it
+            else if (isRMBClicked && !Input.GetMouseButton(1))
             {
-                SetZoom(1);
+                isRMBClicked = false;
             }
-            else if (Input.mouseScrollDelta.y > 0) // If scrolled down
+
+            if (newRMBClick)
             {
-                SetZoom(-1);
+                isZoomed = !isZoomed;
             }
-        }
-        markerFrom = curMarkerPOS;
-        curMarkerPOS = ZoomMarkers[curZoom];
-        markerTo = curMarkerPOS;
 
-        float newFOV = isZoomed ? ZoomLevels[curZoom] : normalFOV;
-        BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, newFOV, Time.deltaTime * zoomSpeed);
+            if (isZoomed)
+            {
+                if (Input.mouseScrollDelta.y < 0) // If scrolled up
+                {
+                    SetZoom(1);
+                }
+                else if (Input.mouseScrollDelta.y > 0) // If scrolled down
+                {
+                    SetZoom(-1);
+                }
+            }
+            markerFrom = curMarkerPOS;
+            curMarkerPOS = ZoomMarkers[curZoom];
+            markerTo = curMarkerPOS;
 
-        if (markerFrom != null && markerTo != null)
-        {
-            zoomMarker.transform.position = Vector3.Lerp(markerFrom.transform.position, markerTo.transform.position, Time.deltaTime * zoomSpeed);
-        }
-        else
-        {
-            Debug.LogWarning("MarkerFrom or MarkerTo not assigned");
-        }
-        
-        // Update the transform of the binocular object itself so it stays where it should be (whether player is using it or has it down)
-        BinocularDisplay.transform.position = Vector3.Lerp(BinocularDisplay.transform.position, isZoomed ? BinosUpPOS.transform.position : BinosDownPOS.transform.position, Time.deltaTime * binoMoveSpeed);
-        
-        if (Input.GetMouseButton(0)) //Changed from GetMouseButtonDown() to make scanning more reliable
-        {
-          Ray ray = new(BinocularCamera.transform.position, BinocularCamera.transform.forward);
-          //Debug.Log("Drawing Ray");
-          Debug.DrawRay(BinocularCamera.transform.position, BinocularCamera.transform.forward, Color.green);
+            float newFOV = isZoomed ? ZoomLevels[curZoom] : normalFOV;
+            BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, newFOV, Time.deltaTime * zoomSpeed);
+
+            if (markerFrom != null && markerTo != null)
+            {
+                zoomMarker.transform.position = Vector3.Lerp(markerFrom.transform.position, markerTo.transform.position, Time.deltaTime * zoomSpeed);
+            }
+            else
+            {
+                Debug.LogWarning("MarkerFrom or MarkerTo not assigned");
+            }
+
+            // Update the transform of the binocular object itself so it stays where it should be (whether player is using it or has it down)
+            BinocularDisplay.transform.position = Vector3.Lerp(BinocularDisplay.transform.position, isZoomed ? BinosUpPOS.transform.position : BinosDownPOS.transform.position, Time.deltaTime * binoMoveSpeed);
+
+            if (Input.GetMouseButton(0)) //Changed from GetMouseButtonDown() to make scanning more reliable
+            {
+                Ray ray = new(BinocularCamera.transform.position, BinocularCamera.transform.forward);
+                //Debug.Log("Drawing Ray");
+                Debug.DrawRay(BinocularCamera.transform.position, BinocularCamera.transform.forward, Color.green);
                 // If raycast hits something in the "Bird" Layer
                 if (Physics.Raycast(ray, out RaycastHit hit, detectionRange))
                 {
-                    if(IsInBirdLayer(hit.collider.gameObject, birdLayer))
+                    if (IsInBirdLayer(hit.collider.gameObject, birdLayer))
                     {
                         BirdInfo bird = hit.collider.GetComponent<BirdInfo>();
                         if (bird != null)
@@ -160,10 +145,11 @@ public class Binoculars : MonoBehaviour
                         {
                             RestartScannedIndicator();
                         }
+                    }
+
                 }
-                    
-                }
-         }
+            }
+        }
 
         
     }
