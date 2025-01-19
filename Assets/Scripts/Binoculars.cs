@@ -20,7 +20,7 @@ public class Binoculars : MonoBehaviour
     public float curMarkerSetting = 0;
     public GameObject curMarkerPOS;
     public GameObject zoomMarker, MarkerPOS1, MarkerPOS2, MarkerPOS3, markerFrom, markerTo;
-
+    public List<GameObject> IndexList = new List<GameObject>();
     public GameObject BinocularDisplay, BinosUpPOS, BinosDownPOS;
     private Coroutine infoBoxCoroutine, ScannedIndicator;
 
@@ -119,6 +119,7 @@ public class Binoculars : MonoBehaviour
                     if (IsInBirdLayer(hit.collider.gameObject, birdLayer))
                     {
                         BirdInfo bird = hit.collider.GetComponent<BirdInfo>();
+                        CheckIndexEntry(bird);
                         if (bird != null)
                         {
                             Debug.Log("Scanned a bird");
@@ -258,5 +259,31 @@ public class Binoculars : MonoBehaviour
     {
         // Add a log entry to the logbook script with the bird's BirdInfo
         Logbook.GetComponent<Logbook>().AddBirdEntry(bird);
+    }
+    void CheckIndexEntry(BirdInfo bird)
+    {
+        IndexList = logbookScript.BirdIndex;
+
+        if (bird.species != null)
+        {
+            if (bird.species == "House Sparrow")
+            {
+                if (!IndexList.Contains(logbookScript.hSparrowIndex))
+                {
+                    logbookScript.BirdIndex.Add(logbookScript.hSparrowIndex);
+                }
+            }
+            else if (bird.species == "Northern Cardinal")
+            {
+                if (!IndexList.Contains(logbookScript.CardinalIndex))
+                {
+                    logbookScript.BirdIndex.Add(logbookScript.CardinalIndex);
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("Scanned Bird.species = null in CheckIndexEntry()");
+        }
     }
 }

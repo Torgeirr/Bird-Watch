@@ -13,8 +13,10 @@ public class Logbook : MonoBehaviour
     [SerializeField] private Transform LogbookParent; // Parent object where entries will be housed
     [SerializeField] private List<Transform> entryPositions; // List of positions for entries (max 4)
     [SerializeField] private List<GameObject> activeEntries = new List<GameObject>(); // Active log entries
-    public List<GameObject> Encyclobirdia = new List<GameObject>();
-    public GameObject curEncyclobirdiaEntry, binoculars;
+    public List<GameObject> BirdIndex = new List<GameObject>();
+    public int curIndex;
+    public GameObject openingIndexPage, hSparrowIndex, CardinalIndex;
+    public GameObject binoculars;
     public Binoculars binoScript;
     public GameObject LogbookUpPOS, LogbookDownPOS;
     private float moveSpeed = 5f;
@@ -29,15 +31,17 @@ public class Logbook : MonoBehaviour
     public void Start()
     {
         binoScript = binoculars.GetComponent<Binoculars>();
+        InitBirdIndex();
     }
     public void FixedUpdate()
     {
+        
         // Only let player operate Logbook if Binoculars are not being used
         if (!binoScript.isZoomed)
         {
             // Operates both Logbook raise/lower action and the Logbook UI instructions
             // Uses same general logic as FixedUpdate() of Binoculars.cs, just in a function 
-            LMBInstruction();
+            LogbookOperation();
         }
         
     }
@@ -179,7 +183,7 @@ public class Logbook : MonoBehaviour
         Destroy(removedEntry);
     }
 
-    public void LMBInstruction()
+    public void LogbookOperation()
     {
         newLMBClick = false;
         //If the player is clicking LMB while LMB isn't considered clicked
@@ -211,45 +215,64 @@ public class Logbook : MonoBehaviour
         {
             if (Input.mouseScrollDelta.y < 0) // If scrolled up
             {
+
                 Debug.Log("Page scrolled UP");
-                //SetPage(1);
+                SetPage(1);
             }
             else if (Input.mouseScrollDelta.y > 0) // If scrolled down
             {
-                Debug.Log("Page scrolled UP");
-                //SetPage(-1);
+                Debug.Log("Page scrolled DOWN");
+                SetPage(-1);
             }
         }
 
+
         //Replace with page scrolling logic
         //markerFrom = curMarkerPOS;
-       // curMarkerPOS = ZoomMarkers[curZoom];
-       // markerTo = curMarkerPOS;
+        // curMarkerPOS = ZoomMarkers[curZoom];
+        // markerTo = curMarkerPOS;
 
         //float newFOV = isZoomed ? ZoomLevels[curZoom] : normalFOV;
         //BinocularCamera.fieldOfView = Mathf.Lerp(BinocularCamera.fieldOfView, newFOV, Time.deltaTime * zoomSpeed);
 
-       // if (markerFrom != null && markerTo != null)
-       // {
-       //     zoomMarker.transform.position = Vector3.Lerp(markerFrom.transform.position, markerTo.transform.position, Time.deltaTime * zoomSpeed);
-       // }
-       // else
-       // {
-       //     Debug.LogWarning("MarkerFrom or MarkerTo not assigned");
-       // }
+        // if (markerFrom != null && markerTo != null)
+        // {
+        //     zoomMarker.transform.position = Vector3.Lerp(markerFrom.transform.position, markerTo.transform.position, Time.deltaTime * zoomSpeed);
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("MarkerFrom or MarkerTo not assigned");
+        // }
 
         // Update the transform of the Logbook object itself so it stays where it should be (whether player is using it or has it down)
         transform.position = Vector3.Lerp(transform.position, isRaised ? LogbookUpPOS.transform.position : LogbookDownPOS.transform.position, Time.deltaTime * moveSpeed);
         transform.rotation = Quaternion.Lerp(transform.rotation, isRaised ? LogbookUpPOS.transform.rotation : LogbookDownPOS.transform.rotation, Time.deltaTime * moveSpeed);
     }
 
-    //Sets the Logbook Encyclopedia page as the player scrolls (when book is raised)
-    //public void SetPage(int scrollDirection)
-    //{
+        //Sets the Logbook Encyclopedia page as the player scrolls (when book is raised)
+        public void SetPage(int scrollDirection)
+        {
 
-    //    curPage = Mathf.Clamp(curPage + scrollDirection, 0, PageLevels.Length - 1);
-    //    BinocularCamera.fieldOfView = PageLevels[curPage];
-     //   curMarkerSetting = Mathf.Clamp(curMarkerSetting + scrollDirection, 0, PageLevels.Length - 1);
-    //    Debug.Log($"Zoom set to {PageLevels[curPage]}");
-   // }
+            curIndex = Mathf.Clamp(curIndex + scrollDirection, 0, BirdIndex.Count - 1);
+            for (int i = 0; i < BirdIndex.Count; i++)
+            {
+                if(i == curIndex)
+                {
+                    BirdIndex[i].SetActive(true); //Enable the current page
+                }
+            else
+                {
+                    BirdIndex[i].SetActive(false); //Disable all other pages
+                }
+            }
+         }
+    
+
+    public void InitBirdIndex()
+    {
+        BirdIndex.Add(openingIndexPage);
+        curIndex = BirdIndex.Count - 1;
+    }
 }
+
+
