@@ -31,7 +31,8 @@ public class Binoculars : MonoBehaviour
     public GameObject Logbook; // Logbook gameobject reference
     public Logbook logbookScript;
     public GameObject RMBInstructions;
-    public TMPro.TextMeshProUGUI birdStatText, birdSpeciesText, birdInfoText;
+    public TMPro.TextMeshPro birdStatText, birdSpeciesText, birdInfoText;
+    
 
     public bool isZoomed = false, isRMBClicked = false, newRMBClick = false, tester = false, firstClicked = false, scrolled = false;
 
@@ -237,14 +238,18 @@ public class Binoculars : MonoBehaviour
     void ShowBirdInfo(BirdInfo bird)
     {
         // Set info in Info Box
-        birdStatText.fontSize = 55.22f;
+        //birdStatText.fontSize = 55.22f;
         birdStatText.text = $"Species: {bird.species}\n" +
+                            "\n" +
                             $"Sex: {bird.curSex}\n" +
+                            "\n" +
                             $"Length: {bird.length}in\n" +
                             $"Weight: {bird.weight}oz";
 
-        birdSpeciesText.text = $"Species: {bird.species}\n" +
+        birdSpeciesText.text = $"Species: {bird.species}\n" + 
+                                "\n" +
                                $"Scientific Name: {bird.latin}\n" +
+                               "\n" +
                                $"Length Range: {bird.lengthMin}in - {bird.lengthMax}in\n" +
                                $"Weight Range: {bird.weightMin}oz - {bird.weightMax}oz\n";
 

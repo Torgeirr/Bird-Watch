@@ -32,18 +32,22 @@ public class BirdInfo : MonoBehaviour
                 //If the bird is a house sparrow, give it house sparrow stats and info
                 species = "House Sparrow";
                 latin = "Passer domesticus";
-                info = "A common type of sparrow in the North Florida area. Introduced from Europe, but they thrive here. Especially around human habitation.";
+                info = "A common type of sparrow in the North Florida area. Introduced in 1851, they have come to thrive in both American continents.";
                 lengthMin = 5.9f;
                 lengthMax = 6.7f;
                 weightMin = 0.9f;
                 weightMax = 1.1f;
 
-                // Assign randomized length for bird within its range
-                length = Random.Range(lengthMin, lengthMax);
-                // Assign the ration of the actual length and the max length
-                float ratio = length / lengthMax;
+                // Give random length to bird, then round to two decimals
+                float exactLength = (Random.Range(lengthMin, lengthMax));
+                length = Mathf.Round(exactLength * 100f) / 100f;
+
+                // Assign the ratio of length and max length to determine weight proportion [
+                float ratio = (length - lengthMin) / (lengthMax - lengthMin);
+
                 // Determine the weight by the same ratio
-                weight = (weightMin + ratio);
+                float exactWeight = weightMin + ratio * (weightMax - weightMin);
+                weight = Mathf.Round(exactWeight * 100f) / 100f;
 
                 //Randomly select sex
                 int rando = Random.Range(0, 100);
@@ -63,18 +67,22 @@ public class BirdInfo : MonoBehaviour
                 //If the bird is a cardinal, give it cardinal stats and info
                 species = "Northern Cardinal";
                 latin = "Cardinalis cardinalis";
-                info = "Makes its nests in shrubs and spends its time foraging on the ground and singing in the trees.";
+                info = "Found foraging on the ground and singing high in the trees, Cardinals are vibrant and territorial natives to the Eastern United States.";
                 lengthMin = 8.3f;
                 lengthMax = 9.3f;
                 weightMin = 1.19f;
                 weightMax = 2.29f;
 
-                // Assign randomized length for bird within its range
-                length = Random.Range(lengthMin, lengthMax);
-                // Assign the ration of the actual length and the max length
-                float ratio = length / lengthMax;
+                // Give random length to bird, then round to two decimals
+                float exactLength = (Random.Range(lengthMin, lengthMax));
+                length = Mathf.Round(exactLength * 100f) / 100f;
+
+                // Assign the ratio of length and max length to determine weight proportion [
+                float ratio = (length - lengthMin) / (lengthMax - lengthMin);
+
                 // Determine the weight by the same ratio
-                weight = (weightMin + ratio);
+                float exactWeight = weightMin + ratio * (weightMax - weightMin);
+                weight = Mathf.Round(exactWeight * 100f) / 100f;
 
                 //Randomly select sex
                 int rando = Random.Range(0, 100);
