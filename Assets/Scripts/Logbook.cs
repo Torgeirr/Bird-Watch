@@ -144,6 +144,7 @@ public class Logbook : MonoBehaviour
 
         // Find the species TMP and update with the bird's species info
         TMP_Text speciesText = entry.transform.Find("Species Text").GetComponent<TMP_Text>();
+        speciesText.fontSize = 34.8f;
         speciesText.text = birdInfo.species;
 
         // Find the gender TMP and update with the bird's gender info
@@ -152,13 +153,16 @@ public class Logbook : MonoBehaviour
 
         // Find the length and weight TMPs and update with the bird's length and weight info
         TMP_Text lengthText = entry.transform.Find("Length Text").GetComponent<TMP_Text>();
-        lengthText.text = $"Length: {birdInfo.length:F1} in";
+        lengthText.fontSize = 34.8f;
+        lengthText.text = $"Length: {birdInfo.length:F1}in";
 
         TMP_Text weightText = entry.transform.Find("Weight Text").GetComponent<TMP_Text>();
-        weightText.text = $"Weight: {birdInfo.weight:F1} oz";
+        weightText.fontSize = 34.8f;
+        weightText.text = $"Weight: {birdInfo.weight:F1}oz";
 
         // Find the info blurb TMP and update with the bird's blurb info
         TMP_Text infoText = entry.transform.Find("Info Text").GetComponent<TMP_Text>();
+        infoText.fontSize = 30.7f;
         infoText.text = birdInfo.info;
 
     }

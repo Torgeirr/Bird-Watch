@@ -81,7 +81,7 @@ public class Binoculars : MonoBehaviour
 
             if (isZoomed)
             {
-                if (Input.mouseScrollDelta.y < 0) // If scrolled up
+                if (Input.mouseScrollDelta.y < 0) // If scrolled up 
                 {
                     SetZoom(1);
                 }
@@ -238,10 +238,10 @@ public class Binoculars : MonoBehaviour
     void ShowBirdInfo(BirdInfo bird)
     {
         // Set info in Info Box
-        //birdStatText.fontSize = 55.22f;
+        //birdStatText.fontSize = 34.8f;
         birdStatText.text = $"Species: {bird.species}\n" +
                             "\n" +
-                            $"Sex: {bird.curSex}\n" +
+                            $"Gender: {bird.curSex}\n" +
                             "\n" +
                             $"Length: {bird.length}in\n" +
                             $"Weight: {bird.weight}oz";
@@ -253,6 +253,7 @@ public class Binoculars : MonoBehaviour
                                $"Length Range: {bird.lengthMin}in - {bird.lengthMax}in\n" +
                                $"Weight Range: {bird.weightMin}oz - {bird.weightMax}oz\n";
 
+        //birdInfoText.fontSize = 30.7f;
         birdInfoText.text = bird.info;
 
         /*// Display Info Box
